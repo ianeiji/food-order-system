@@ -1,0 +1,24 @@
+{
+  "name": "food-order-system",
+  "version": "1.0.0",
+  "main": "index.js",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ianeiji/food-order-system.git"
+  },
+  "author": "ian",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ianeiji/food-order-system/issues"
+  },
+  "homepage": "https://github.com/ianeiji/food-order-system#readme",
+  "keywords": [],
+  "description": ""
+}
