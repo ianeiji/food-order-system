@@ -1,0 +1,250 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id               Int              @id @default(autoincrement()) // テナントID
+  name             String // テナント名
+  createdAt        DateTime         @default(now()) // 登録日時
+  updatedAt        DateTime         @updatedAt // 更新日時
+  stores           Store[]
+  employees        Employee[]
+  products         Product[]
+  categories       Category[]
+  carts            Cart[]
+  orders           Order[]
+  reviews          Review[]
+  productAllergies ProductAllergy[]
+  sales            Sales[]
+  ProductImage     ProductImage[]
+  OrderDetail      OrderDetail[]
+  Inventory        Inventory[]
+
+  @@map("tenants")
+}
+
+model Store {
+  id         Int        @id @default(autoincrement()) // 店舗ID
+  tenantId   Int // テナントID
+  name       String // 店舗名
+  address    String? // 店舗住所
+  createdAt  DateTime   @default(now()) // 登録日時
+  updatedAt  DateTime   @updatedAt // 更新日時
+  employees  Employee[]
+  products   Product[]
+  orders     Order[]
+  reviews    Review[]
+  categories Category[]
+  sales      Sales[]
+
+  tenant         Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  ProductImage   ProductImage[]
+  Inventory      Inventory[]
+  ProductAllergy ProductAllergy[]
+
+  @@map("stores")
+}
+
+model Employee {
+  id        Int      @id @default(autoincrement()) // ID
+  tenantId  Int // テナントID
+  storeId   Int? // 店舗ID
+  username  String // ユーザー名
+  email     String   @unique // メールアドレス
+  password  String // パスワード
+  createdAt DateTime @default(now()) // 登録日時
+  updatedAt DateTime @updatedAt // 更新日時
+
+  carts  Cart[]
+  orders Order[]
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  store  Store? @relation(fields: [storeId], references: [id], onDelete: SetNull)
+
+  @@map("employees")
+}
+
+model Product {
+  id          Int      @id @default(autoincrement()) // ID
+  tenantId    Int // テナントID
+  storeId     Int? // 店舗ID
+  name        String // 商品名
+  description String // 説明
+  price       Float // 価格
+  categoryId  Int? // カテゴリID
+  sort        Int      @default(0) // 並び順
+  is_visible  Boolean // 表示フラグ
+  createdAt   DateTime @default(now()) // 登録日時
+  updatedAt   DateTime @updatedAt // 更新日時
+
+  productImages ProductImage[]
+  carts         Cart[]
+  orderDetails  OrderDetail[]
+  category      Category?        @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  inventory     Inventory[]
+  reviews       Review[]
+  allergies     ProductAllergy[]
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  store  Store? @relation(fields: [storeId], references: [id], onDelete: SetNull)
+
+  @@map("products")
+}
+
+model ProductImage {
+  id        Int      @id @default(autoincrement()) // ID
+  tenantId  Int // テナントID
+  storeId   Int? // 店舗ID
+  productId Int // 商品ID
+  url       String // 画像URL
+  createdAt DateTime @default(now()) // 登録日時
+  updatedAt DateTime @updatedAt // 更新日時
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  store   Store?  @relation(fields: [storeId], references: [id], onDelete: SetNull)
+
+  @@map("product_images")
+}
+
+model Category {
+  id        Int      @id @default(autoincrement()) // ID
+  tenantId  Int // テナントID
+  storeId   Int? // 店舗ID
+  name      String // カテゴリ名
+  sort      Int      @default(0) // 並び順
+  createdAt DateTime @default(now()) // 登録日時
+
+  products Product[]
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  store    Store?    @relation(fields: [storeId], references: [id], onDelete: SetNull)
+
+  @@map("categories")
+}
+
+model Cart {
+  id        Int      @id @default(autoincrement()) // ID
+  tenantId  Int // テナントID
+  userId    String // 顧客ID
+  productId Int // 商品ID
+  quantity  Int // 数量
+  createdAt DateTime @default(now()) // 登録日時
+  updatedAt DateTime @updatedAt // 更新日時
+
+  product    Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  tenant     Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  Employee   Employee? @relation(fields: [employeeId], references: [id])
+  employeeId Int?
+
+  @@map("carts")
+}
+
+model Order {
+  id        Int      @id @default(autoincrement()) // ID
+  tenantId  Int // テナントID
+  storeId   Int? // 店舗ID
+  userId    String // 顧客ID
+  orderNum  String   @unique // 注文番号
+  status    String // ステータス
+  memo      String? // メモ欄
+  createdAt DateTime @default(now()) // 登録日時
+  updatedAt DateTime @updatedAt // 更新日時
+
+  orderDetails OrderDetail[]
+
+  tenant     Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  store      Store?    @relation(fields: [storeId], references: [id], onDelete: SetNull)
+  Employee   Employee? @relation(fields: [employeeId], references: [id])
+  employeeId Int?
+
+  @@map("orders")
+}
+
+model OrderDetail {
+  id        Int      @id @default(autoincrement()) // ID
+  tenantId  Int // テナントID
+  orderId   Int // 注文ID
+  productId Int // 商品ID
+  quantity  Int // 数量
+  unitPrice Float // 単価
+  options   String? // オプション（JSON形式で保存）
+  memo      String? // 商品ごとのメモ欄
+  createdAt DateTime @default(now()) // 登録日時
+  updatedAt DateTime @updatedAt // 更新日時
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: NoAction)
+  product Product @relation(fields: [productId], references: [id], onDelete: NoAction)
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("order_details")
+}
+
+model Inventory {
+  id        Int      @id @default(autoincrement()) // ID
+  tenantId  Int // テナントID
+  storeId   Int? // 店舗ID
+  productId Int // 商品ID
+  quantity  Int // 在庫数量
+  createdAt DateTime @default(now()) // 登録日時
+  updatedAt DateTime @updatedAt // 更新日時
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  store   Store?  @relation(fields: [storeId], references: [id], onDelete: SetNull)
+
+  @@map("inventories")
+}
+
+model Review {
+  id        Int      @id @default(autoincrement()) // ID
+  tenantId  Int // テナントID
+  storeId   Int? // 店舗ID
+  productId Int // 商品ID
+  rating    Int // 評価
+  comment   String? // コメント
+  createdAt DateTime @default(now()) // 登録日時
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  store   Store?  @relation(fields: [storeId], references: [id], onDelete: SetNull)
+
+  @@map("reviews")
+}
+
+model ProductAllergy {
+  id        Int      @id @default(autoincrement()) // ID
+  tenantId  Int // テナントID
+  storeId   Int? // 店舗ID
+  productId Int // 商品ID
+  name      String // アレルギー名
+  createdAt DateTime @default(now()) // 登録日時
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  tenant  Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  store   Store?  @relation(fields: [storeId], references: [id], onDelete: SetNull)
+
+  @@map("product_allergies")
+}
+
+model Sales {
+  id        Int      @id @default(autoincrement()) // ID
+  tenantId  Int // テナントID
+  storeId   Int? // 店舗ID
+  date      DateTime // 日付
+  total     Float // 総売上
+  createdAt DateTime @default(now()) // 登録日時
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  store  Store? @relation(fields: [storeId], references: [id], onDelete: SetNull)
+
+  @@unique([tenantId, storeId, date])
+  @@map("sales")
+}
