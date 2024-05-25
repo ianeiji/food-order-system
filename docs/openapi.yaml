@@ -1,0 +1,681 @@
+openapi: 3.0.0
+info:
+  title: Food Order System API
+  version: 1.0.0
+  description: API documentation for the Food Order System
+servers:
+  - url: http://localhost:3001
+tags:
+  - name: admin
+    description: Admin operations
+  - name: order
+    description: Order operations
+  - name: kitchen
+    description: Kitchen operations
+paths:
+  /admin/categories:
+    post:
+      tags:
+        - admin
+      summary: Add a new category
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewCategory'
+      responses:
+        '201':
+          description: Category added
+    get:
+      tags:
+        - admin
+      summary: Get all categories
+      responses:
+        '200':
+          description: A list of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+
+  /admin/categories/{categoryId}:
+    get:
+      tags:
+        - admin
+      summary: Get category details
+      parameters:
+        - in: path
+          name: categoryId
+          required: true
+          schema:
+            type: string
+          description: The category ID
+      responses:
+        '200':
+          description: Category details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+    put:
+      tags:
+        - admin
+      summary: Update category
+      parameters:
+        - in: path
+          name: categoryId
+          required: true
+          schema:
+            type: string
+          description: The category ID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryUpdate'
+      responses:
+        '200':
+          description: Category updated
+    delete:
+      tags:
+        - admin
+      summary: Delete category
+      parameters:
+        - in: path
+          name: categoryId
+          required: true
+          schema:
+            type: string
+          description: The category ID
+      responses:
+        '200':
+          description: Category deleted
+
+  /admin/products:
+    post:
+      tags:
+        - admin
+      summary: Add a new product
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewProduct'
+      responses:
+        '201':
+          description: Product added
+    get:
+      tags:
+        - admin
+      summary: Get all products with filtering
+      parameters:
+        - in: query
+          name: category
+          schema:
+            type: string
+          description: Filter by category
+        - in: query
+          name: priceRange
+          schema:
+            type: string
+          description: Filter by price range (e.g., "10-100")
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Search by product name
+      responses:
+        '200':
+          description: A list of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductWithInventory'
+
+  /admin/products/{productId}:
+    get:
+      tags:
+        - admin
+      summary: Get product details including inventory
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+          description: The product ID
+      responses:
+        '200':
+          description: Product details including inventory
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductWithInventory'
+    put:
+      tags:
+        - admin
+      summary: Update product
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+          description: The product ID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductUpdate'
+      responses:
+        '200':
+          description: Product updated
+    delete:
+      tags:
+        - admin
+      summary: Delete product
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+          description: The product ID
+      responses:
+        '200':
+          description: Product deleted
+
+  /admin/products/{productId}/inventory:
+    put:
+      tags:
+        - admin
+      summary: Update product inventory
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+          description: The product ID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InventoryUpdate'
+      responses:
+        '200':
+          description: Inventory updated
+
+  /admin/tenants:
+    post:
+      tags:
+        - admin
+      summary: Add a new tenant
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewTenant'
+      responses:
+        '201':
+          description: Tenant added
+    get:
+      tags:
+        - admin
+      summary: Get all tenants
+      responses:
+        '200':
+          description: A list of tenants
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tenant'
+
+  /admin/tenants/{tenantId}:
+    put:
+      tags:
+        - admin
+      summary: Update tenant
+      parameters:
+        - in: path
+          name: tenantId
+          required: true
+          schema:
+            type: string
+          description: The tenant ID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TenantUpdate'
+      responses:
+        '200':
+          description: Tenant updated
+    delete:
+      tags:
+        - admin
+      summary: Delete tenant
+      parameters:
+        - in: path
+          name: tenantId
+          required: true
+          schema:
+            type: string
+          description: The tenant ID
+      responses:
+        '200':
+          description: Tenant deleted
+
+  /admin/stores:
+    post:
+      tags:
+        - admin
+      summary: Add a new store
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewStore'
+      responses:
+        '201':
+          description: Store added
+    get:
+      tags:
+        - admin
+      summary: Get all stores
+      responses:
+        '200':
+          description: A list of stores
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Store'
+
+  /admin/stores/{storeId}:
+    put:
+      tags:
+        - admin
+      summary: Update store
+      parameters:
+        - in: path
+          name: storeId
+          required: true
+          schema:
+            type: string
+          description: The store ID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoreUpdate'
+      responses:
+        '200':
+          description: Store updated
+    delete:
+      tags:
+        - admin
+      summary: Delete store
+      parameters:
+        - in: path
+          name: storeId
+          required: true
+          schema:
+            type: string
+          description: The store ID
+      responses:
+        '200':
+          description: Store deleted
+
+  /admin/stats:
+    get:
+      tags:
+        - admin
+      summary: Get sales statistics
+      responses:
+        '200':
+          description: Sales statistics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesStats'
+
+  /orders/products:
+    get:
+      tags:
+        - order
+      summary: Get all products with filtering
+      parameters:
+        - in: query
+          name: category
+          schema:
+            type: string
+          description: Filter by category
+        - in: query
+          name: priceRange
+          schema:
+            type: string
+          description: Filter by price range (e.g., "10-100")
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Search by product name
+      responses:
+        '200':
+          description: A list of products with inventory status
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductWithInventory'
+
+  /orders/products/{productId}:
+    get:
+      tags:
+        - order
+      summary: Get product details
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+          description: The product ID
+      responses:
+        '200':
+          description: Product details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductWithInventory'
+
+  /orders:
+    post:
+      tags:
+        - order
+      summary: Create a new order
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewOrder'
+      responses:
+        '201':
+          description: Order created
+        '400':
+          description: Insufficient inventory
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      tags:
+        - order
+      summary: Get user order history
+      responses:
+        '200':
+          description: A list of user orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+
+  /kitchen/orders:
+    get:
+      tags:
+        - kitchen
+      summary: Get all kitchen orders
+      responses:
+        '200':
+          description: A list of kitchen orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+
+  /kitchen/orders/{orderId}:
+    get:
+      tags:
+        - kitchen
+      summary: Get order details
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: string
+          description: The order ID
+      responses:
+        '200':
+          description: Order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+    put:
+      tags:
+        - kitchen
+      summary: Update order status
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: string
+          description: The order ID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderStatusUpdate'
+      responses:
+        '200':
+          description: Order status updated
+
+components:
+  schemas:
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    OrderItem:
+      type: object
+      properties:
+        productId:
+          type: string
+        quantity:
+          type: integer
+
+    OrderStatusUpdate:
+      type: object
+      properties:
+        status:
+          type: string
+
+    NewOrder:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+
+    NewProduct:
+      type: object
+      properties:
+        name:
+          type: string
+        price:
+          type: number
+        description:
+          type: string
+        categoryId:
+          type: string
+
+    ProductUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        price:
+          type: number
+        description:
+          type: string
+        categoryId:
+          type: string
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        price:
+          type: number
+        description:
+          type: string
+        categoryId:
+          type: string
+
+    ProductWithInventory:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        price:
+          type: number
+        description:
+          type: string
+        categoryId:
+          type: string
+        inventory:
+          $ref: '#/components/schemas/Inventory'
+        isSoldOut:
+          type: boolean
+
+    Inventory:
+      type: object
+      properties:
+        id:
+          type: string
+        productId:
+          type: string
+        quantity:
+          type: integer
+        updatedAt:
+          type: string
+          format: date-time
+
+    InventoryUpdate:
+      type: object
+      properties:
+        quantity:
+          type: integer
+
+    NewCategory:
+      type: object
+      properties:
+        name:
+          type: string
+
+    CategoryUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+
+    NewTenant:
+      type: object
+      properties:
+        name:
+          type: string
+
+    TenantUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+
+    Tenant:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+
+    NewStore:
+      type: object
+      properties:
+        name:
+          type: string
+        tenantId:
+          type: string
+
+    StoreUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+
+    Store:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        tenantId:
+          type: string
+
+    SalesStats:
+      type: object
+      properties:
+        totalSales:
+          type: number
+        totalOrders:
+          type: integer
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
