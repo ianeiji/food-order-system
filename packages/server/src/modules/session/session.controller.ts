@@ -1,0 +1,21 @@
+import { Controller, Get, Query, Req, Res } from '@nestjs/common';
+import { SessionService } from './session.service';
+import { Request, Response } from 'express';
+
+@Controller('session')
+export class SessionController {
+  constructor(private readonly sessionService: SessionService) {}
+
+  @Get('init')
+  initializeSession(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('tenantId') tenantId: number,
+    @Query('storeId') storeId: number,
+  ) {
+    const sessionId = req.session.id; // express-sessionのセッションIDを使用
+
+    this.sessionService.createSession(sessionId, tenantId, storeId);
+    res.send({ message: 'Session initialized', sessionId, tenantId, storeId });
+  }
+}
