@@ -1,7 +1,7 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { ProductModule } from './modules/order-system/product/product.module';
-import { SessionMiddleware } from './modules/session/session.middleware';
+import { ProductModule } from '@modules/order-system/product/product.module';
+import { SessionMiddleware } from '@modules/session/session.middleware';
 
 @Module({
   imports: [
