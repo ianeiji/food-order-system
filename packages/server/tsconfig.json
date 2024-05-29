@@ -19,5 +19,13 @@
     "noFallthroughCasesInSwitch": false,
     "strict": true,
     "typeRoots": ["./node_modules/@types", "./src/types"],
-  }
+    "rootDir": "./src",
+    "paths": {
+      "@modules/*": ["src/modules/*"],
+      "@config/*": ["src/config/*"],
+      "@common/*": ["src/common/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }
