@@ -10,7 +10,7 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
-    "incremental": true,
+    // "incremental": true, インクリメンタルモードを一時的に無効にする
     "skipLibCheck": true,
     "strictNullChecks": false,
     "noImplicitAny": true,
