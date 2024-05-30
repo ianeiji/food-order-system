@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { SearchProductsDto, ProductDto } from './dto/product.dto';
-import { SessionService } from '../../session/session.service';
+import { SessionService } from '@modules/session/session.service';
 import { Request } from 'express';
 
 @Controller('product')
