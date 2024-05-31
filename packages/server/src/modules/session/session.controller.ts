@@ -12,10 +12,23 @@ export class SessionController {
     @Res() res: Response,
     @Query('tenantId') tenantId: number,
     @Query('storeId') storeId: number,
+    @Query('tableNumber') tableNumber: number,
   ) {
-    const sessionId = req.session.id; // express-sessionのセッションIDを使用
+    const sessionId = req.cookies['sessionId'];
 
-    this.sessionService.createSession(sessionId, tenantId, storeId);
-    res.send({ message: 'Session initialized', sessionId, tenantId, storeId });
+    this.sessionService.createSession(
+      sessionId,
+      tenantId,
+      storeId,
+      tableNumber,
+    );
+
+    res.send({
+      message: 'Session initialized',
+      sessionId,
+      tenantId,
+      storeId,
+      tableNumber,
+    });
   }
 }
