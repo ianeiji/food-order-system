@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:3002',
+  baseURL: 'http://localhost:3001',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -33,12 +33,3 @@ axiosInstance.interceptors.response.use(
 )
 
 export default axiosInstance
-
-const initializeSession = async (tenantId: number, storeId: number) => {
-  const response = await axios.get('/session/init', {
-    params: { tenantId, storeId },
-  })
-  console.log(response.data)
-}
-// テナントIDと店舗IDを渡してセッションを初期化
-initializeSession(1, 1) // 実際のテナントIDと店舗IDを使用
