@@ -20,12 +20,12 @@ export class ProductController {
 
   @Get()
   async getProducts(@Query() query: SearchProductsDto, @Req() req: Request) {
-    const session = this.sessionService.getSession(req.cookies['sessionId']);
-    if (
-      !session ||
-      session.tenantId !== query.tenantId ||
-      session.storeId !== query.storeId
-    ) {
+    const sessionId = req.cookies['sessionId'];
+    if (!sessionId) {
+      throw new BadRequestException('Session ID is required');
+    }
+    const session = this.sessionService.getSession(sessionId);
+    if (!session) {
       throw new BadRequestException('Invalid session or unauthorized access');
     }
     return this.productService.getProducts(query);
@@ -38,11 +38,15 @@ export class ProductController {
     @Query('storeId') storeId: number,
     @Req() req: Request,
   ): Promise<ProductDto> {
-    const session = this.sessionService.getSession(req.cookies['sessionId']);
+    const sessionId = req.cookies['sessionId'];
+    if (!sessionId) {
+      throw new BadRequestException('Session ID is required');
+    }
+    const session = this.sessionService.getSession(sessionId);
     if (
       !session ||
       session.tenantId !== tenantId ||
-      storeId !== session.storeId
+      session.storeId !== storeId
     ) {
       throw new BadRequestException('Invalid session or unauthorized access');
     }
